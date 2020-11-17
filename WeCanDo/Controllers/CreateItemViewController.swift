@@ -145,6 +145,8 @@ class CreateItemViewController: UIViewController {
         self.hideKeyboardWhenTappedAround()
 //        self.moveViewWithKeyboard()
         
+        // commit test용도
+        
         adjustColors()
     }
     
