@@ -17,6 +17,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: scene)
 //        window?.rootViewController = UINavigationController(rootViewController: MainTableViewController())
         window?.rootViewController = UINavigationController(rootViewController: MainCollectionViewController(collectionViewLayout: UICollectionViewFlowLayout()))
+//        window?.rootViewController = UINavigationController(rootViewController: DetailTableViewController())
+//        window?.rootViewController = TestViewController()
         window?.makeKeyAndVisible()
     }
 

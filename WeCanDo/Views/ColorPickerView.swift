@@ -20,7 +20,7 @@ class ColorPickerView: UIView {
     var index: Int?
     var hexCode: String?
     
-    var parentVC: CreateItemViewController? {
+    var parentVC: EditItemViewController? {
         didSet {
             guard let parentVC = self.parentVC else { return }
             self.layer.cornerRadius = (((parentVC.view.frame.size.width - 60) / 6) - ((parentVC.colorPickerSpacing * 5) / 6)) / 2

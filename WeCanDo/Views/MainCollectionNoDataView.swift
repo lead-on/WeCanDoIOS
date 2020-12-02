@@ -1,21 +1,21 @@
 //
-//  MainCollectionFooterCell.swift
+//  MainCollectionNoDataView.swift
 //  WeCanDo
 //
-//  Created by 서원영 on 2020/11/17.
+//  Created by 서원영 on 2020/11/18.
 //
 
 import UIKit
 
 
-protocol MainCollectionFooterCellProtocol {
+protocol MainCollectionNoDataViewProtocol {
     func startEditItemViewController()
 }
 
 
-class MainCollectionFooterCell: UICollectionViewCell {
+class MainCollectionNoDataView: UIView {
     
-    var delegate: MainCollectionFooterCellProtocol?
+    var delegate: MainCollectionNoDataViewProtocol?
     
     lazy var addItemButton: UIButton = {
         let button = UIButton(type: UIButton.ButtonType.system)
@@ -48,8 +48,8 @@ class MainCollectionFooterCell: UICollectionViewCell {
         
         addSubview(addItemButton)
         addItemButton.translatesAutoresizingMaskIntoConstraints = false
-        addItemButton.topAnchor.constraint(equalTo: topAnchor).isActive = true
-        addItemButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
+        addItemButton.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
+        addItemButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
         
         adjustColors()
     }

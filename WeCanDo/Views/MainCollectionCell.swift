@@ -9,8 +9,9 @@ import UIKit
 
 
 protocol MainCollectionCellProtocol {
-    func removeItem()
-    func startEditItemViewController()
+    func removeItem(indexPath: IndexPath)
+    func startEditItemViewController(item: Item, indexPath: IndexPath)
+    func startDetailTableViewController()
 }
 
 
@@ -18,14 +19,17 @@ class MainCollectionCell: UICollectionViewCell {
     
     var delegate: MainCollectionCellProtocol?
     
+    var indexPath: IndexPath?
     var item: Item? {
         didSet {
             guard let item = self.item else { return }
             
             self.titleLabel.text = item.title
             self.countLabel.text = String(item.count!)
+            self.menuIV.tintColor = UIColor(hexString: item.hexCode!)
             
-            if item.editMode {
+            // 편집모드인지 확인 후 뷰 세팅
+            if item.isEditMode {
                 menuIV.removeFromSuperview()
                 titleLabel.removeFromSuperview()
                 arrowIV.removeFromSuperview()
@@ -57,9 +61,7 @@ class MainCollectionCell: UICollectionViewCell {
                 editButton.centerYAnchor.constraint(equalTo: centerYAnchor).isActive = true
                 editButton.rightAnchor.constraint(equalTo: rightAnchor, constant: -15).isActive = true
                 
-                
             } else {
-//                menuIV.leftAnchor.constraint(equalTo: leftAnchor, constant: 13).isActive = true
                 removeIV.removeFromSuperview()
                 menuIV.removeFromSuperview()
                 titleLabel.removeFromSuperview()
@@ -93,10 +95,23 @@ class MainCollectionCell: UICollectionViewCell {
         }
     }
     
+    var isDragMode: Bool? {
+        didSet {
+            guard let isDragMode = self.isDragMode else { return }
+            if isDragMode {
+                self.layer.shadowRadius = 4 // 그림자 크기
+            } else {
+                self.layer.shadowRadius = 0 // 그림자 크기
+            }
+        }
+    }
+    
     lazy var menuIV: UIImageView = {
         let iv = UIImageView()
-        iv.tintColor = .systemGreen
+        iv.image = UIImage(systemName: "line.horizontal.3.circle.fill")
+//        iv.tintColor = UIColor(hexString: "#000000")
         iv.layer.cornerRadius = 15
+        iv.backgroundColor = .white
         return iv
     }()
     
@@ -120,6 +135,7 @@ class MainCollectionCell: UICollectionViewCell {
     
     lazy var removeIV: UIImageView = {
         let iv = UIImageView()
+        iv.image = UIImage(systemName: "minus.circle.fill")
         iv.tintColor = .systemRed
         iv.isUserInteractionEnabled = true
         iv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(removeIVTapped)))
@@ -135,11 +151,20 @@ class MainCollectionCell: UICollectionViewCell {
     }()
     
     @objc func removeIVTapped() {
-        delegate?.removeItem()
+        guard let indexPath = self.indexPath else { return }
+        delegate?.removeItem(indexPath: indexPath)
     }
     
     @objc func editButtonTapped() {
-        delegate?.startEditItemViewController()
+        guard let item = self.item else { return }
+        guard let indexPath = self.indexPath else { return }
+        delegate?.startEditItemViewController(item: item, indexPath: indexPath)
+    }
+    
+    @objc func selfTapped() {
+        guard let item = self.item else { return }
+        if item.isEditMode { return }
+        delegate?.startDetailTableViewController()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -148,15 +173,11 @@ class MainCollectionCell: UICollectionViewCell {
     func adjustColors() {
         if self.traitCollection.userInterfaceStyle == .dark {
             // 다크모드
-            menuIV.image = UIImage(systemName: "line.horizontal.3.circle")
             arrowIV.tintColor = .white
-            removeIV.image = UIImage(systemName: "minus.circle")
             editButton.tintColor = .white
         } else {
             // 라이트모드
-            menuIV.image = UIImage(systemName: "line.horizontal.3.circle.fill")
             arrowIV.tintColor = .black
-            removeIV.image = UIImage(systemName: "minus.circle.fill")
             editButton.tintColor = .black
         }
     }
@@ -166,6 +187,11 @@ class MainCollectionCell: UICollectionViewCell {
         
         self.backgroundColor = .systemBackground
         self.layer.cornerRadius = 4
+        self.layer.shadowColor = UIColor.black.cgColor // 그림자 색
+        self.layer.shadowOpacity = 0.5 // 그림자 진함 정도
+        self.layer.shadowOffset = CGSize(width: 0, height: 0) // 그림자 시작 위치 (x,y)
+        
+        self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(selfTapped)))
         
         adjustColors()
     }
